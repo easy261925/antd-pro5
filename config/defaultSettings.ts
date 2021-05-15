@@ -3,7 +3,9 @@ import { PROJECT_NAME } from '../src/utils/CONSTANTS'
 const Settings: LayoutSettings & {
   pwa?: boolean;
   logo?: string;
+  version?: string;
 } = {
+  version: '1.0.0',
   navTheme: 'light',
   primaryColor: '#255796',
   layout: 'mix',

@@ -1,14 +1,8 @@
-import {
-  LockOutlined,
-  MobileOutlined,
-  UserOutlined,
-} from '@ant-design/icons';
+import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { Alert, message, Tabs } from 'antd';
 import React, { useState } from 'react';
-import ProForm, { ProFormCaptcha, ProFormText } from '@ant-design/pro-form';
-import { useIntl, Link, history, FormattedMessage, useModel } from 'umi';
-import { getFakeCaptcha } from '@/services/ant-design-pro/login';
-
+import ProForm, { ProFormText } from '@ant-design/pro-form';
+import { Link, history, useModel } from 'umi';
 import styles from './index.less';
 import { loginService } from '@/services/login';
 import { ResponseEntity, UserEntity } from '@/interface';
@@ -26,13 +20,15 @@ const LoginMessage: React.FC<{
     showIcon
   />
 );
-
 /** 此方法会跳转到 redirect 参数所在的位置 */
+
 const goto = () => {
   if (!history) return;
   setTimeout(() => {
     const { query } = history.location;
-    const { redirect } = query as { redirect: string };
+    const { redirect } = query as {
+      redirect: string;
+    };
     history.push(redirect || '/');
   }, 10);
 };
@@ -43,30 +39,27 @@ const Login: React.FC = () => {
   const [type, setType] = useState<string>('account');
   const { initialState, setInitialState } = useModel('@@initialState');
 
-  const intl = useIntl();
-
   const fetchUserInfo = async () => {
     const userInfo = await initialState?.fetchUserInfo?.();
+
     if (userInfo) {
-      setInitialState({
-        ...initialState,
-        currentUser: userInfo,
-      });
+      setInitialState({ ...initialState, currentUser: userInfo });
     }
   };
 
   const handleSubmit = async (values: UserEntity) => {
-    setSubmitting(true);
-    // 登录
+    setSubmitting(true); // 登录
+
     const loginResult = await loginService({ ...values });
+
     if (loginResult.success) {
       message.success('登录成功！');
-      setToken(loginResult.data.token)
+      setToken(loginResult.data.token);
       await fetchUserInfo();
       goto();
       return;
-    }
-    // 如果失败去设置用户错误信息
+    } // 如果失败去设置用户错误信息
+
     setUserLoginState(loginResult);
     setSubmitting(false);
   };
@@ -89,10 +82,7 @@ const Login: React.FC = () => {
             }}
             submitter={{
               searchConfig: {
-                submitText: intl.formatMessage({
-                  id: 'pages.login.submit',
-                  defaultMessage: '登录',
-                }),
+                submitText: '登录'
               },
               render: (_, dom) => dom.pop(),
               submitButtonProps: {
@@ -110,17 +100,12 @@ const Login: React.FC = () => {
             <Tabs activeKey={type} onChange={setType}>
               <Tabs.TabPane
                 key="account"
-                tab={intl.formatMessage({
-                  id: 'pages.login.accountLogin.tab',
-                  defaultMessage: '账户密码登录',
-                })}
+                tab='账户密码登录'
               />
             </Tabs>
 
             {userLoginState && !userLoginState.success && (
-              <LoginMessage
-                content='用户名或密码错误'
-              />
+              <LoginMessage content="用户名或密码错误" />
             )}
             {type === 'account' && (
               <>
@@ -130,16 +115,11 @@ const Login: React.FC = () => {
                     size: 'large',
                     prefix: <UserOutlined className={styles.prefixIcon} />,
                   }}
-                  placeholder='请输入用户名'
+                  placeholder="请输入用户名"
                   rules={[
                     {
                       required: true,
-                      message: (
-                        <FormattedMessage
-                          id="pages.login.username.required"
-                          defaultMessage="请输入用户名!"
-                        />
-                      ),
+                      message: '用户名是必填项！',
                     },
                   ]}
                 />
@@ -149,16 +129,11 @@ const Login: React.FC = () => {
                     size: 'large',
                     prefix: <LockOutlined className={styles.prefixIcon} />,
                   }}
-                  placeholder='请输入密码'
+                  placeholder="请输入密码"
                   rules={[
                     {
                       required: true,
-                      message: (
-                        <FormattedMessage
-                          id="pages.login.password.required"
-                          defaultMessage="请输入密码！"
-                        />
-                      ),
+                      message: '密码是必填项！',
                     },
                   ]}
                 />
